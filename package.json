@@ -1,0 +1,26 @@
+{
+  "name": "flutter-keeper",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.2.0",
+    "js-yaml": "^4.1.0",
+    "tauri-plugin-upload-api": "https://github.com/tauri-apps/tauri-plugin-upload",
+    "vue": "^3.2.45",
+    "vue-router": "4"
+  },
+  "devDependencies": {
+    "@arco-design/web-vue": "^2.45.3",
+    "@tauri-apps/cli": "^1.2.3",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.1",
+    "vite": "^4.2.1"
+  }
+}
