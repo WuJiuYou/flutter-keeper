@@ -4,11 +4,11 @@ import { Command } from "@tauri-apps/api/shell";
 
 
 const getFlutterTags = async () => {
-    const commandResult = await new Command("git", ['ls-remote','--tags','https://github.com/flutter/flutter.git','--sort=-creatordate','v*.*.*']).execute();
+    const commandResult = await new Command("git", ['ls-remote','-l','--tags','https://github.com/flutter/flutter.git','--sort=-creatordate','v*.*.*']).execute();
     if(commandResult.code === 0){
-        const stdout = commandResult.stdout.split('\n');
-        const stable = stdout.map(el => el.split('/v')[1])
-        console.log('stable:::::',stable);
+        // const stdout = commandResult.stdout.split('\n');
+        // const stable = stdout.map(el => el.split('/v')[1])
+        console.log('stable:::::',commandResult.stdout);
     }else{
         console.log('commandResult:::::',commandResult.stderr);
     }
