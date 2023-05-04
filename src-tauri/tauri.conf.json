@@ -20,6 +20,11 @@
             "name": "flutter",
             "cmd": "flutter",
             "args": true
+          },
+          {
+            "name": "git",
+            "cmd": "git",
+            "args": true
           }
         ]
       },

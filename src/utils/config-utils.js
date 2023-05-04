@@ -2,6 +2,7 @@
 import {homeDir,appConfigDir,join} from "@tauri-apps/api/path"
 import * as fs from "@tauri-apps/api/fs"
 
+
 async function confInit(){
         const home = await homeDir()
         const sdkSavePath = await join(home,'.keeperVersion')
@@ -23,3 +24,17 @@ export async function getConfig(){
     return JSON.parse(conf);
 }
 
+
+export async function readKeeperConf(path){
+    const confPath = await join(path,'keeper.conf')
+    const isExist = await fs.exists(confPath)
+    if(isExist){
+        const conf = await fs.readTextFile(confPath);
+        return JSON.parse(conf);
+    }else{
+        return {
+            version:'',
+            time: 0
+        }
+    } 
+}   

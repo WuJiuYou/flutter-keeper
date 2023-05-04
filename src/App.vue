@@ -69,11 +69,11 @@ const goGithub = () => {
             Project
           </a-menu-item>
           <a-menu-item key="2">
-            <IconCalendar></IconCalendar>
+            <icon-tag />
             Versions
           </a-menu-item>
           <a-menu-item key="3">
-            <IconCalendar></IconCalendar>
+            <icon-settings />
             Setting
           </a-menu-item>
         </a-menu>
