@@ -37,6 +37,14 @@
       "fs": {
         "all": true,
         "scope": ["**"]
+      },
+      "os": {
+        "all": true
+      },
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["http://**", "https://**"]
       }
     },
     "bundle": {

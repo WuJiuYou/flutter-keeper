@@ -35,14 +35,14 @@ const readFlutterProjectList = async () => {
     const flutterProjectList = [];
     for (let index = 0; index < projectDir.length; index++) {
         const item = projectDir[index];
-        console.log('item:::::::',item)
+        console.log('item:::::::', item)
         if (item.children !== undefined) {
             const yaml = await join(item.path, "pubspec.yaml");
             const isExists = await fs.exists(yaml);
             if (isExists) {
                 const filed = await fs.readTextFile(yaml);
                 const yamlFile = YAML.load(filed);
-                const keepConf = await ConfigUtils.readKeeperConf(item.path) 
+                const keepConf = await ConfigUtils.readKeeperConf(item.path)
                 flutterProjectList.push({
                     name: item.name,
                     desc: yamlFile.description,
@@ -55,8 +55,8 @@ const readFlutterProjectList = async () => {
         }
     }
     form.items.length = 0;
-    if(flutterProjectList.length>1){
-        flutterProjectList.sort((a,b)=> b.creatTime-a.creatTime)
+    if (flutterProjectList.length > 1) {
+        flutterProjectList.sort((a, b) => b.creatTime - a.creatTime)
     }
     form.items = [...flutterProjectList];
 
@@ -99,24 +99,24 @@ const handleOk = async () => {
         form.projectType
     ]
 
-    if(form.projectType !== 'package'){
-        params.push('--android-language',form.androidLang)
-        params.push('--ios-language',form.iosLang)
-        params.push('--platforms',form.platforms.join(','))
+    if (form.projectType !== 'package') {
+        params.push('--android-language', form.androidLang)
+        params.push('--ios-language', form.iosLang)
+        params.push('--platforms', form.platforms.join(','))
     }
 
     params.push('--pub')
     params.push('--no-offline')
     params.push('--overwrite')
-    
+
     const commandResult = await new Command("flutter", params).execute();
     disabled.value = false;
     if (commandResult.code == 0) {
-        const codePath = await join(basePath,form.projectName)
-        const fullPath = await join(codePath,'keeper.conf')
+        const codePath = await join(basePath, form.projectName)
+        const fullPath = await join(codePath, 'keeper.conf')
         const time = Date.now();
-        const conf = JSON.stringify({version:form.flutterVersion,time})
-        await fs.writeTextFile(fullPath,conf)
+        const conf = JSON.stringify({ version: form.flutterVersion, time })
+        await fs.writeTextFile(fullPath, conf)
         await readFlutterProjectList();
         handleCommandSuccess();
         visible.value = false;
@@ -142,7 +142,7 @@ const finderOpen = (path) => {
     open(`file://${path}`);
 }
 
-const disableform = ()=>{
+const disableform = () => {
     return form.projectType === 'package'
 }
 
@@ -151,33 +151,35 @@ readFlutterProjectList();
 </script>
 
 <template>
-    <a-grid :cols="{ xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }" :colGap="20" :rowGap="20" class="grid-grid">
-        <a-card v-for="item in form.items" :key="item.name" :title="item.name" hoverable>
-            <template #extra>
-                <a-space>
-                    <img src="../assets/studio.png" width="25" @click="studioOpen(item.path)" class="bImage" />
-                    <img src="../assets/code.png" width="25" @click="codeOpen(item.path)" class="bImage" />
-                    <img src="../assets/finder.png" width="25" @click="finderOpen(item.path)" class="bImage" />
-                </a-space>
-            </template>
-            {{ item.desc }}
-            <br />
-            <br />
-            <br />
-            <a-space :wrap="true">
-                <a-tag size="small">v{{ item.version }}</a-tag>
-                <a-tag size="small">flutter：v{{ item.flutterVersion }}</a-tag>
-            </a-space>
-        </a-card>
-        <a-card @click="handleClick" hoverable>
-            <a-empty>
-                <template #image>
-                    <icon-plus />
+    <a-layout-content>
+        <a-grid :cols="{ xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }" :colGap="20" :rowGap="20" class="grid-grid">
+            <a-card v-for="item in form.items" :key="item.name" :title="item.name" hoverable>
+                <template #extra>
+                    <a-space>
+                        <img src="../assets/studio.png" width="25" @click="studioOpen(item.path)" class="bImage" />
+                        <img src="../assets/code.png" width="25" @click="codeOpen(item.path)" class="bImage" />
+                        <img src="../assets/finder.png" width="25" @click="finderOpen(item.path)" class="bImage" />
+                    </a-space>
                 </template>
-                Create New Flutter Project
-            </a-empty>
-        </a-card>
-    </a-grid>
+                {{ item.desc }}
+                <br />
+                <br />
+                <br />
+                <a-space :wrap="true">
+                    <a-tag size="small">v{{ item.version }}</a-tag>
+                    <a-tag size="small">flutter：v{{ item.flutterVersion }}</a-tag>
+                </a-space>
+            </a-card>
+            <a-card @click="handleClick" hoverable>
+                <a-empty>
+                    <template #image>
+                        <icon-plus />
+                    </template>
+                    Create New Flutter Project
+                </a-empty>
+            </a-card>
+        </a-grid>
+    </a-layout-content>
 
     <a-modal :visible="visible" :closable="false" :maskClosable="false" :on-before-ok="handleOk" @cancel="handleCancel"
         width="auto" ok-text="Finish" cancel-text="Cancel" unmountOnClose>
