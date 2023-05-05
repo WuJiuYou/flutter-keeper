@@ -70,9 +70,9 @@ getFlutterReleaseVersions()
 
 
 <template>
-    <a-layout class="layout">
-        <a-affix offset-top="44" >
-            <a-layout-header style="z-index: 1;">
+    <a-layout style="position: relative;">
+        <a-affix :offsetTop="44">
+            <a-layout-header class="oHeader">
                 <a-space>
                     <a-radio-group @change="onRaidoChange" v-model="filter.release">
                         <a-radio value="stable" :default-checked="true">Stable</a-radio>
@@ -90,54 +90,39 @@ getFlutterReleaseVersions()
                 </a-space>
             </a-layout-header>
         </a-affix>
-        <a-layout-content>
-            <a-list :data="filter.versions.releases">
+
+        <a-layout-content class="content">
+            <a-list :data="filter.versions.releases.filter((el) => el.channel === filter.release)" :split="true" :size="small"
+                :bordered="false">
                 <template #item="{ item, index }">
                     <a-list-item :key="index">
-                        <a-list-item-meta :title="item.version" :description="item.release_date">
-                            <template #avatar>
-                                <a-avatar shape="square">
-                                    A
-                                </a-avatar>
-                            </template>
-                        </a-list-item-meta>
+                        <a-space>
+                            <a-tag>v{{ item.version }}</a-tag>
+                            <a-tag>{{ item.release_date }}</a-tag>
+                            <a-tag>{{ item.dart_sdk_arch }}</a-tag>
+                        </a-space>
                     </a-list-item>
                 </template>
             </a-list>
         </a-layout-content>
-        <a-layout-footer class="footer">
-            <a-space>
-                <a-button type="primary">Download</a-button>
-            </a-space>
-        </a-layout-footer>
+
     </a-layout>
 </template>
 
 
 <style scoped>
-.layout :deep(.arco-layout-header) {
+.oHeader {
     height: 44px;
-    border-bottom: 0.5px solid var(--color-border-2);
     display: flex;
-    align-items: center;
-    padding-left: 15px;
-    padding-right: 15px;
     justify-content: space-between;
+    padding: 0 20px 0 20px;
+    z-index: 97;
     background-color: var(--color-bg-2);
-    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.footer {
-    height: 64px;
-    position: fixed;
-    bottom: 0;
-    left: 0px;
-    right: 0;
-    z-index: 1;
-    background-color: var(--color-bg-2);
-    display: flex;
-    justify-content: end;
-    padding-right: 30px;
+.content {
+    min-height: calc(100vh - 44px);
 }
 </style>
   

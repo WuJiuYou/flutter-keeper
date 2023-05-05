@@ -65,8 +65,8 @@ const collapsedEvent = (value) => {
         </a-button>
       </a-space>
     </a-layout-header>
-    <a-layout>
-      <a-layout-sider collapsible breakpoint="xl" @collapse="collapsedEvent" class="sider">
+    <a-layout-content>
+      <a-layout-sider collapsible breakpoint="xl" @collapse="collapsedEvent" show-collapse-button class="sider">
         <a-menu :default-selected-keys="['1']" :style="{ width: '100%' }" @menu-item-click="onMenuItemClick">
           <a-menu-item key="1">
             <IconHome></IconHome>
@@ -81,22 +81,16 @@ const collapsedEvent = (value) => {
             Setting
           </a-menu-item>
         </a-menu>
-
-        <template #trigger="{ collapsed }">
-          <IconCaretRight v-if="collapsed"></IconCaretRight>
-          <IconCaretLeft v-else></IconCaretLeft>
-        </template>
       </a-layout-sider>
-      <a-layout-content class="content" :class="{collapsed:isCollapsed}">
-        <router-view></router-view>
-      </a-layout-content>
-    </a-layout>
+      <a-layout class="routerView" :class="{collapsed:isCollapsed}">
+        <router-view style=""></router-view>
+      </a-layout>
+    </a-layout-content>
   </a-layout>
 </template>
 
 <style scoped>
 .layout-demo {
-  /* height: 100vh; */
   background-color: var(--color-bg-1);
 }
 
@@ -112,7 +106,7 @@ const collapsedEvent = (value) => {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 100;
   border-bottom: 0.5px solid var(--color-border);
   background-color: var(--color-bg-2);
 }
@@ -122,7 +116,7 @@ const collapsedEvent = (value) => {
   top: 44px;
   bottom: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 99;
   margin-left: 0;
   border-right: .5px solid var(--color-border);
   overflow: hidden;
@@ -134,13 +128,12 @@ const collapsedEvent = (value) => {
   color: var(--color-text-1);
 }
 
-.content {
-  margin-top: 44px;
+.routerView {
   margin-left: 200px;
-  overflow: auto;
-  flex-grow: 1;
+  margin-top: 44px;
 }
+
 .collapsed {
-  margin-left: 40px;
+  margin-left: 48px;
 }
 </style>

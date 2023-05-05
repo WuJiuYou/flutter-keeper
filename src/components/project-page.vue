@@ -151,7 +151,7 @@ readFlutterProjectList();
 </script>
 
 <template>
-    <a-layout-content>
+    <a-layout-content class="content">
         <a-grid :cols="{ xs: 1, sm: 2, md: 2, lg: 3, xl: 3, xxl: 3 }" :colGap="20" :rowGap="20" class="grid-grid">
             <a-card v-for="item in form.items" :key="item.name" :title="item.name" hoverable>
                 <template #extra>
@@ -250,5 +250,8 @@ readFlutterProjectList();
 
 .bImage:hover {
     transform: scale(1.2);
+}
+.content {
+    min-height: calc(100vh - 44px);
 }
 </style>

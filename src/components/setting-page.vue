@@ -68,9 +68,8 @@ setFlutterDir()
 
 
 <template>
-  <a-layout class="content">
-    <a-form :model="form" :style="{ width: 'auto', backgroundColor: 'var(--color-bg-2)', padding: '30px 20px 0 20px' }"
-      @submit="handleSubmit">
+  <a-layout style="padding-right: 100px;">
+    <a-form :model="form"  @submit="handleSubmit" style="display: flex;height: calc(100vh - 44px);padding-top: 50px;">
       <a-form-item field="sdkShortPath" label="Flutter Home">
         <a-input v-model="form.sdkShortPath" disabled />
       </a-form-item>
@@ -103,7 +102,5 @@ setFlutterDir()
 
 
 <style scoped>
-.content {
-  padding: 20px;
-}
+
 </style>
