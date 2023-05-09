@@ -1,15 +1,13 @@
 <script setup>
 import { ref, reactive } from "vue";
+import { type } from "@tauri-apps/api/os";
 import { homeDir, join } from "@tauri-apps/api/path";
 import { Command, open } from "@tauri-apps/api/shell";
 import * as fs from "@tauri-apps/api/fs";
-import { Notification } from "@arco-design/web-vue";
+import { Notification, Modal } from "@arco-design/web-vue";
 import * as ConfigUtils from "../utils/config-utils";
 import YAML from "js-yaml";
 
-const visible = ref(false);
-
-const disabled = ref(false);
 
 const form = reactive({
     projectName: "first_app",
@@ -21,22 +19,39 @@ const form = reactive({
     platforms: ["ios", "android", "web", "macos", "windows", "linux"],
     flutterVersion: '3.0.5',
 
+    disabled: false,
+    visible: false,
     items: [],
     projectPath: "",
+    sdkSavePath: "",
+    flutterHome: "",
+    versions: [],
+    os: ""
 });
 
 const readFlutterProjectList = async () => {
+    const osType = await type();
+    if (osType === 'Darwin') {
+        form.os = 'macos'
+    } else if (osType === 'Windows_NT') {
+        form.os = 'windows'
+    } else {
+        form.os = 'linux'
+    }
     if (form.projectPath === "") {
         const conf = await ConfigUtils.getConfig();
         form.projectPath = conf.projectPath;
+        form.sdkSavePath = conf.sdkSavePath;
     }
+    const home = await homeDir()
+    form.flutterHome = await join(home, 'flutter')
+    form.versions = await ConfigUtils.getSdkVersions(form.sdkSavePath)
     const projectDir = await fs.readDir(form.projectPath);
-
     const flutterProjectList = [];
     for (let index = 0; index < projectDir.length; index++) {
         const item = projectDir[index];
-        console.log('item:::::::', item)
-        if (item.children !== undefined) {
+        // console.log('item:::::::', item)
+        if (item.children) {
             const yaml = await join(item.path, "pubspec.yaml");
             const isExists = await fs.exists(yaml);
             if (isExists) {
@@ -59,8 +74,6 @@ const readFlutterProjectList = async () => {
         flutterProjectList.sort((a, b) => b.creatTime - a.creatTime)
     }
     form.items = [...flutterProjectList];
-
-    console.log("*******查找目录完成********");
 };
 
 const handleCommandSuccess = () => {
@@ -78,12 +91,20 @@ const handleCommandError = (error) => {
 };
 
 const handleClick = async () => {
-    visible.value = true;
-};
+    form.versions = await ConfigUtils.getSdkVersions(form.sdkSavePath)
+    if (form.versions.length !== 0) {
+        Modal.warning({
+            title: 'Warning Notification',
+            content: 'Please download the Flutter SDK on the "Versions" page and configure the relevant Flutter environment variables.Then refer to the relevant configuration on the setting page for the Flutter SDK path'
+        });
+    } else {
+        form.visible = true;
+    }
+}
 
 const handleOk = async () => {
-    disabled.value = true;
-    visible.value = true;
+    form.disabled = true;
+    form.visible = true;
     var basePath = "";
     basePath = await homeDir();
     basePath = await join(basePath, "KeeperSpace");
@@ -110,7 +131,7 @@ const handleOk = async () => {
     params.push('--overwrite')
 
     const commandResult = await new Command("flutter", params).execute();
-    disabled.value = false;
+    form.disabled = false;
     if (commandResult.code == 0) {
         const codePath = await join(basePath, form.projectName)
         const fullPath = await join(codePath, 'keeper.conf')
@@ -119,7 +140,7 @@ const handleOk = async () => {
         await fs.writeTextFile(fullPath, conf)
         await readFlutterProjectList();
         handleCommandSuccess();
-        visible.value = false;
+        form.visible = false;
         return true;
     } else {
         handleCommandError(commandResult.stderr);
@@ -128,14 +149,16 @@ const handleOk = async () => {
 };
 
 const handleCancel = () => {
-    visible.value = false;
-};
-
-const studioOpen = (path) => {
-    open(`idea://open?file=${path}`);
+    form.visible = false;
 }
-const codeOpen = (path) => {
-    open(`vscode://file/${path}`);
+
+const studioOpen = async (path, version) => {
+    const isCanOpen = await setFlutterSDKSymlink(version)
+    if (isCanOpen) open(`idea://open?file=${path}`);
+}
+const codeOpen = async (path, version) => {
+    const isCanOpen = await setFlutterSDKSymlink(version)
+    if (isCanOpen) open(`vscode://file/${path}`);
 }
 
 const finderOpen = (path) => {
@@ -144,6 +167,42 @@ const finderOpen = (path) => {
 
 const disableform = () => {
     return form.projectType === 'package'
+}
+
+const setFlutterSDKSymlink = async (version) => {
+    var isSuccess = true
+    const fullPath = await join(form.sdkSavePath, version)
+    const shorPath = form.flutterHome
+    const isExitst = await fs.exists(shorPath)
+    if (isExitst) {
+        const current = await fs.readTextFile(await join(shorPath, 'version'))
+        if (current !== version) {
+            await fs.removeDir(shorPath, { recursive: true })
+        }
+    }
+    var res;
+    if (form.os === 'windows') {
+        res = await new Command('mklink', ['/D', shorPath, fullPath]).execute()
+    } else {
+        res = await new Command('ln', ['-s', fullPath, shorPath]).execute()
+    }
+    if (res.code !== 0) {
+        console.log("ln::::::::", res.stderr);
+        return false
+    } else {
+        console.log("ln::::::::", res.stdout);
+    }
+    return isSuccess
+}
+
+const changeFlutterVersion = async (value, item) => {
+    if (value === item.flutterVersion) return
+    const keepConf = await ConfigUtils.readKeeperConf(item.path)
+    const fullPath = await join(item.path, 'keeper.conf')
+    keepConf.version = value;
+    const conf = JSON.stringify(keepConf)
+    await fs.writeTextFile(fullPath, conf)
+    await readFlutterProjectList();
 }
 
 
@@ -156,8 +215,10 @@ readFlutterProjectList();
             <a-card v-for="item in form.items" :key="item.name" :title="item.name" hoverable>
                 <template #extra>
                     <a-space>
-                        <img src="../assets/studio.png" width="25" @click="studioOpen(item.path)" class="bImage" />
-                        <img src="../assets/code.png" width="25" @click="codeOpen(item.path)" class="bImage" />
+                        <img src="../assets/studio.png" width="25" @click="studioOpen(item.path, item.flutterVersion)"
+                            class="bImage" />
+                        <img src="../assets/code.png" width="25" @click="codeOpen(item.path, item.flutterVersion)"
+                            class="bImage" />
                         <img src="../assets/finder.png" width="25" @click="finderOpen(item.path)" class="bImage" />
                     </a-space>
                 </template>
@@ -167,7 +228,13 @@ readFlutterProjectList();
                 <br />
                 <a-space :wrap="true">
                     <a-tag size="small">v{{ item.version }}</a-tag>
-                    <a-tag size="small">flutter：v{{ item.flutterVersion }}</a-tag>
+                    <a-dropdown trigger="hover" @select="(value) => changeFlutterVersion(value, item)">
+                        <a-tag size="small">use:v{{ item.flutterVersion }}</a-tag>
+                        <template #content>
+                            <a-doption v-for="version in form.versions" :key="version" :value="version">v{{ version
+                            }}</a-doption>
+                        </template>
+                    </a-dropdown>
                 </a-space>
             </a-card>
             <a-card @click="handleClick" hoverable>
@@ -181,10 +248,10 @@ readFlutterProjectList();
         </a-grid>
     </a-layout-content>
 
-    <a-modal :visible="visible" :closable="false" :maskClosable="false" :on-before-ok="handleOk" @cancel="handleCancel"
+    <a-modal :visible="form.visible" :closable="false" :maskClosable="false" :on-before-ok="handleOk" @cancel="handleCancel"
         width="auto" ok-text="Finish" cancel-text="Cancel" unmountOnClose>
         <template #title> New Project </template>
-        <a-form :model="form" :disabled="disabled">
+        <a-form :model="form" :disabled="form.disabled">
             <a-form-item field="projectName" label="Project name">
                 <a-input v-model="form.projectName" />
             </a-form-item>
@@ -251,6 +318,7 @@ readFlutterProjectList();
 .bImage:hover {
     transform: scale(1.2);
 }
+
 .content {
     min-height: calc(100vh - 44px);
 }

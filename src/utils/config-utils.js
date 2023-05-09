@@ -5,9 +5,11 @@ import * as fs from "@tauri-apps/api/fs"
 
 async function confInit(){
         const home = await homeDir()
-        const sdkSavePath = await join(home,'.keeperVersion')
+        const sdkSavePath = await join(home,'keeperVersion')
         const projectPath = await join(home,'keeperSpace')
         await fs.createDir('', { dir: fs.BaseDirectory.AppConfig, recursive: true});
+        await fs.createDir(sdkSavePath, {recursive: true});
+        await fs.createDir(projectPath, {recursive: true});
         await saveConfig(sdkSavePath,projectPath)
 }
 
@@ -37,4 +39,20 @@ export async function readKeeperConf(path){
             time: 0
         }
     } 
-}   
+}
+
+export async function getSdkVersions(path){
+    const sdkDir = await fs.readDir(path);
+    console.log('sdkDir::::::::::',sdkDir)
+    const flutterSDKList = [];
+    for (let index = 0; index < sdkDir.length; index++) {
+        const item = sdkDir[index];
+        if(item.children !== undefined){
+            flutterSDKList.push(item.name)
+        }
+    }
+    if(flutterSDKList.length > 1){
+        flutterSDKList.sort((a,b)=> a<b)
+    }
+    return flutterSDKList
+}

@@ -25,6 +25,16 @@
             "name": "git",
             "cmd": "git",
             "args": true
+          },
+          {
+            "name": "ln",
+            "cmd": "ln",
+            "args": true
+          },
+          {
+            "name": "mklink",
+            "cmd": "mklink",
+            "args": true
           }
         ]
       },
@@ -71,7 +81,9 @@
         "resizable": true,
         "title": "flutter-keeper",
         "width": 800,
-        "height": 600
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 600
       }
     ]
   }

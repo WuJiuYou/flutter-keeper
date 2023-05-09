@@ -12,6 +12,7 @@
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
     "axios": "^1.4.0",
+    "dayjs": "^1.11.7",
     "js-yaml": "^4.1.0",
     "tauri-plugin-upload-api": "https://github.com/tauri-apps/tauri-plugin-upload",
     "vue": "^3.2.45",

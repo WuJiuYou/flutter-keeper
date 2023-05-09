@@ -1,8 +1,10 @@
 <script setup>
 import { fetch } from "@tauri-apps/api/http"
-import { Command } from "@tauri-apps/api/shell"
+import { open } from "@tauri-apps/api/shell"
 import { reactive } from "vue";
 import { type } from '@tauri-apps/api/os'
+import dayjs from 'dayjs'
+import { getConfig } from "../utils/config-utils"
 
 // releases
 // archive: "stable/macos/flutter_macos_3.7.12-stable.zip"
@@ -17,13 +19,19 @@ const filter = reactive({
     release: 'stable',
     mirror: navigator.language === 'zh-CN' ? 'https://mirrors.tuna.tsinghua.edu.cn/flutter' : 'https://storage.googleapis.com',
     versions: {
+        base_url: '',
         current_release: {},
         releases: []
     },
+    sdkSavePath:""
 })
 
-// https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json
+const getSdkSavePath=async()=>{
+    const config = await getConfig()
+    filter.sdkSavePath = config.sdkSavePath
+}
 
+// https://storage.googleapis.com/flutter_infra_release/releases/releases_macos.json
 const getFlutterReleaseVersions = async () => {
     // "Linux" | "Darwin" | "Windows_NT"
     const osType = await type();
@@ -53,17 +61,23 @@ const getFlutterReleaseVersions = async () => {
     }
 }
 
-
-const onRaidoChange = async (value) => {
-    console.log("onRaidoChange============", value);
+const openSdkSavePath=()=>{
+    console.log("openSdkSavePath::::::::::::",filter.sdkSavePath);
+    open(`file://${filter.sdkSavePath}`);
 }
 
-const onSelectChange = (value) => {
-    console.log("onSelectChange============", value);
-}
+
+// const onRaidoChange = async (value) => {
+//     console.log("onRaidoChange============", value);
+// }
+
+// const onSelectChange = (value) => {
+//     console.log("onSelectChange============", value);
+// }
 
 
 getFlutterReleaseVersions()
+getSdkSavePath()
 
 </script>
 
@@ -71,10 +85,13 @@ getFlutterReleaseVersions()
 
 <template>
     <a-layout style="position: relative;">
+        <a-alert type="success" banner :show-icon="false">
+            After downloading, please unzip to the "<a-link @click="openSdkSavePath">{{ filter.sdkSavePath }}</a-link>" folder, rename the folder to the version number of Flutter, for example: 3.7.0
+        </a-alert>
         <a-affix :offsetTop="44">
             <a-layout-header class="oHeader">
                 <a-space>
-                    <a-radio-group @change="onRaidoChange" v-model="filter.release">
+                    <a-radio-group v-model="filter.release">
                         <a-radio value="stable" :default-checked="true">Stable</a-radio>
                         <a-radio value="dev">Dev</a-radio>
                         <a-radio value="beta">Beta</a-radio>
@@ -82,7 +99,7 @@ getFlutterReleaseVersions()
                 </a-space>
                 <a-space>
                     <a-select :style="{ width: '320px' }" v-model="filter.mirror" placeholder="Please select ..."
-                        @change="onSelectChange">
+                        >
                         <a-option>https://storage.googleapis.com</a-option>
                         <a-option>https://storage.flutter-io.cn</a-option>
                         <a-option>https://mirrors.tuna.tsinghua.edu.cn/flutter</a-option>
@@ -92,15 +109,24 @@ getFlutterReleaseVersions()
         </a-affix>
 
         <a-layout-content class="content">
-            <a-list :data="filter.versions.releases.filter((el) => el.channel === filter.release)" :split="true" :size="small"
+            <a-list :data="filter.versions.releases.filter((el) => el.channel === filter.release)" :split="true"
                 :bordered="false">
                 <template #item="{ item, index }">
                     <a-list-item :key="index">
                         <a-space>
+                            <a-tag color="red" v-if="item.dart_sdk_arch && item.dart_sdk_arch.trim()">{{ item.dart_sdk_arch
+                            }}</a-tag>
                             <a-tag>v{{ item.version }}</a-tag>
-                            <a-tag>{{ item.release_date }}</a-tag>
-                            <a-tag>{{ item.dart_sdk_arch }}</a-tag>
+                            <a-tag>{{ dayjs(item.release_date).format('YYYY-MM-DD HH:mm') }}</a-tag>
                         </a-space>
+                        <template #actions>
+                            <a :href="`${filter.versions.base_url.replace('https://storage.googleapis.com', filter.mirror)}/${item.archive}`"
+                                target="_blank">
+                                <a-button>
+                                    <icon-download />
+                                </a-button>
+                            </a>
+                        </template>
                     </a-list-item>
                 </template>
             </a-list>

@@ -41,7 +41,6 @@ const onSelectProjectPath = async () => {
 const setFlutterDir = async () => {
   home = await homeDir()
   form.flutterHome = await join(home, 'flutter')
-  form.sdkShortPath = await join(home, 'flutter/bin:$PATH')
 
   const config = await getConfig()
   form.sdkSavePath = config.sdkSavePath
@@ -50,12 +49,13 @@ const setFlutterDir = async () => {
 
 
 const resetDir = async () => {
-  form.sdkSavePath = await join(home, '.keeperVersion')
+  form.sdkSavePath = await join(home, 'keeperVersion')
   form.projectPath = await join(home, 'keeperSpace')
   await saveConfig(form.sdkSavePath, form.projectPath)
 }
 
 const handleSubmit = async () => {
+  
   await saveConfig(form.sdkSavePath, form.projectPath)
   console.log('saveConfig:::::::::')
   console.log(await getConfig())
@@ -70,8 +70,11 @@ setFlutterDir()
 <template>
   <a-layout style="padding-right: 100px;">
     <a-form :model="form"  @submit="handleSubmit" style="display: flex;height: calc(100vh - 44px);padding-top: 50px;">
-      <a-form-item field="sdkShortPath" label="Flutter Home">
-        <a-input v-model="form.sdkShortPath" disabled />
+      <a-form-item field="flutterHome" label="Flutter Home">
+        <a-input v-model="form.flutterHome" disabled />
+        <template #extra>
+          <div>Use this value to configure the environment variable for Flutter</div>
+        </template>
       </a-form-item>
 
       <a-form-item field="sdkSavePath" label="Sdk Save Path">

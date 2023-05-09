@@ -82,8 +82,8 @@ const collapsedEvent = (value) => {
           </a-menu-item>
         </a-menu>
       </a-layout-sider>
-      <a-layout class="routerView" :class="{collapsed:isCollapsed}">
-        <router-view style=""></router-view>
+      <a-layout class="routerView" :class="{isCollapsed:isCollapsed}">
+        <router-view></router-view>
       </a-layout>
     </a-layout-content>
   </a-layout>
@@ -133,7 +133,7 @@ const collapsedEvent = (value) => {
   margin-top: 44px;
 }
 
-.collapsed {
+.isCollapsed {
   margin-left: 48px;
 }
 </style>
