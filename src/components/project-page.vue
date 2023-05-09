@@ -92,7 +92,7 @@ const handleCommandError = (error) => {
 
 const handleClick = async () => {
     form.versions = await ConfigUtils.getSdkVersions(form.sdkSavePath)
-    if (form.versions.length !== 0) {
+    if (form.versions.length === 0) {
         Modal.warning({
             title: 'Warning Notification',
             content: 'Please download the Flutter SDK on the "Versions" page and configure the relevant Flutter environment variables.Then refer to the relevant configuration on the setting page for the Flutter SDK path'
