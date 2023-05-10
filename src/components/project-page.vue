@@ -46,7 +46,7 @@ const readFlutterProjectList = async () => {
     const home = await homeDir()
     form.flutterHome = await join(home, 'flutter')
     form.versions = await ConfigUtils.getSdkVersions(form.sdkSavePath)
-    if(form.versions.length > 0){
+    if (form.versions.length > 0) {
         form.flutterVersion = form.versions[0]
     }
     const projectDir = await fs.readDir(form.projectPath);
@@ -108,13 +108,13 @@ const handleClick = async () => {
 const handleOk = async () => {
     form.disabled = true;
     form.visible = true;
-    var basePath = "";
-    basePath = await homeDir();
-    basePath = await join(basePath, "KeeperSpace");
-
+    const basePath = form.projectPath
+    const path = await join(basePath, form.projectName)
+    await fs.createDir(path,{recursive:true})
+    console.log('v::::::::', basePath)
     const params = [
         "create",
-        await join(basePath, form.projectName),
+        path,
         "--org",
         form.organization,
         "--description",
@@ -133,9 +133,12 @@ const handleOk = async () => {
     params.push('--no-offline')
     params.push('--overwrite')
 
+    try {
     const commandResult = await new Command("flutter", params).execute();
+    console.log('commandResult::::::::', commandResult)
     form.disabled = false;
     if (commandResult.code == 0) {
+        console.log('commandResult.code=0::::::::')
         const codePath = await join(basePath, form.projectName)
         const fullPath = await join(codePath, 'keeper.conf')
         const time = Date.now();
@@ -148,6 +151,9 @@ const handleOk = async () => {
     } else {
         handleCommandError(commandResult.stderr);
         return false;
+    }
+    } catch (error) {
+        console.log("error：：：：：：：：：",error);
     }
 };
 
@@ -266,7 +272,8 @@ readFlutterProjectList();
 
             <a-form-item field="flutterVersion" label="Use Version" tip>
                 <a-select v-model="form.flutterVersion">
-                    <a-option v-for="(item, index) in form.versions" :key="index" :value="item">flutter v{{ item }}</a-option>
+                    <a-option v-for="(item, index) in form.versions" :key="index" :value="item">flutter v{{ item
+                    }}</a-option>
                 </a-select>
             </a-form-item>
 

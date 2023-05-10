@@ -8,6 +8,7 @@ fn greet(name: &str) -> String {
 }
 
 fn main() {
+    fix_path_env::fix();
     tauri::Builder::default()
         .plugin(tauri_plugin_upload::init())
         .plugin(tauri_plugin_persisted_scope::init())
