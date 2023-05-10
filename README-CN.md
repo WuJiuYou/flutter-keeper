@@ -1,6 +1,5 @@
 <h1 align="center">
 <img src='./src/assets/logo.svg'>
-<span>KEEPER</span>
 </h1>
 <p align="center">
     <a href="./README.md">English</a> | 中文介绍
