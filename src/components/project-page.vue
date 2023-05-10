@@ -17,7 +17,7 @@ const form = reactive({
     androidLang: "kotlin",
     iosLang: "swift",
     platforms: ["ios", "android", "web", "macos", "windows", "linux"],
-    flutterVersion: '3.0.5',
+    flutterVersion: '',
 
     disabled: false,
     visible: false,
@@ -46,6 +46,9 @@ const readFlutterProjectList = async () => {
     const home = await homeDir()
     form.flutterHome = await join(home, 'flutter')
     form.versions = await ConfigUtils.getSdkVersions(form.sdkSavePath)
+    if(form.versions.length > 0){
+        form.flutterVersion = form.versions[0]
+    }
     const projectDir = await fs.readDir(form.projectPath);
     const flutterProjectList = [];
     for (let index = 0; index < projectDir.length; index++) {
@@ -229,7 +232,12 @@ readFlutterProjectList();
                 <a-space :wrap="true">
                     <a-tag size="small">v{{ item.version }}</a-tag>
                     <a-dropdown trigger="hover" @select="(value) => changeFlutterVersion(value, item)">
-                        <a-tag size="small">use:v{{ item.flutterVersion }}</a-tag>
+                        <a-tag size="small">
+                            use:v{{ item.flutterVersion }}
+                            <template #icon>
+                                <icon-check-circle-fill />
+                            </template>
+                        </a-tag>
                         <template #content>
                             <a-doption v-for="version in form.versions" :key="version" :value="version">v{{ version
                             }}</a-doption>
@@ -237,7 +245,7 @@ readFlutterProjectList();
                     </a-dropdown>
                 </a-space>
             </a-card>
-            <a-card @click="handleClick" hoverable>
+            <a-card @click="handleClick" hoverable style="display: flex;align-items: center;justify-content: center;">
                 <a-empty>
                     <template #image>
                         <icon-plus />
@@ -254,6 +262,12 @@ readFlutterProjectList();
         <a-form :model="form" :disabled="form.disabled">
             <a-form-item field="projectName" label="Project name">
                 <a-input v-model="form.projectName" />
+            </a-form-item>
+
+            <a-form-item field="flutterVersion" label="Use Version" tip>
+                <a-select v-model="form.flutterVersion">
+                    <a-option v-for="(item, index) in form.versions" :key="index" :value="item">flutter v{{ item }}</a-option>
+                </a-select>
             </a-form-item>
 
             <a-form-item field="organization" label="Organization">

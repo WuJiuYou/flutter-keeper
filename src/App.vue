@@ -1,8 +1,8 @@
 <script setup>
 import { useRouter } from "vue-router"
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { open } from '@tauri-apps/api/shell'
-
+import * as ConfigUtils from './utils/config-utils'
 const router = useRouter()
 
 const isDark = ref(false)
@@ -23,7 +23,7 @@ const onMenuItemClick = (key) => {
 }
 
 
-const switchTheme = () => {
+const switchTheme = async() => {
   if (isDark.value) {
     isDark.value = false
     document.body.removeAttribute('arco-theme')
@@ -31,6 +31,10 @@ const switchTheme = () => {
     isDark.value = true
     document.body.setAttribute('arco-theme', 'dark')
   }
+
+  const conf = await ConfigUtils.getConfig()
+  conf.theme = isDark.value ? 'dark':'light'
+  await ConfigUtils.saveConfigJson(conf)
 }
 
 const goGithub = () => {
@@ -39,8 +43,20 @@ const goGithub = () => {
 
 const collapsedEvent = (value) => {
   isCollapsed.value = value
-  console.log('collapsedEvent========',value)
 }
+
+const getCurrentTheme=async()=>{
+  const conf = await ConfigUtils.getConfig()
+  if(conf.theme == 'dark'){
+    isDark.value = true
+    document.body.setAttribute('arco-theme', 'dark')
+  }else{
+    isDark.value = false
+    document.body.removeAttribute('arco-theme')
+  }
+}
+
+getCurrentTheme()
 
 </script>
 <template>
@@ -109,6 +125,8 @@ const collapsedEvent = (value) => {
   z-index: 100;
   border-bottom: 0.5px solid var(--color-border);
   background-color: var(--color-bg-2);
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .sider {

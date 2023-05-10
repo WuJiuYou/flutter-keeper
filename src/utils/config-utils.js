@@ -7,14 +7,19 @@ async function confInit(){
         const home = await homeDir()
         const sdkSavePath = await join(home,'keeperVersion')
         const projectPath = await join(home,'keeperSpace')
+        const theme = 'light'
         await fs.createDir('', { dir: fs.BaseDirectory.AppConfig, recursive: true});
         await fs.createDir(sdkSavePath, {recursive: true});
         await fs.createDir(projectPath, {recursive: true});
-        await saveConfig(sdkSavePath,projectPath)
+        await saveConfig(sdkSavePath,projectPath,theme)
 }
 
-export function saveConfig(sdkSavePath,projectPath){
-    return fs.writeTextFile('app.conf',JSON.stringify({sdkSavePath,projectPath}), { dir: fs.BaseDirectory.AppConfig});
+export function saveConfig(sdkSavePath,projectPath,theme){
+    return fs.writeTextFile('app.conf',JSON.stringify({sdkSavePath,projectPath,theme}), { dir: fs.BaseDirectory.AppConfig});
+}
+
+export function saveConfigJson(conf){
+    return fs.writeTextFile('app.conf',JSON.stringify(conf), { dir: fs.BaseDirectory.AppConfig});
 }
 
 export async function getConfig(){

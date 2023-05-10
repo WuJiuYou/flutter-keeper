@@ -27,10 +27,10 @@
 <table>
 <tr>
 <td>
-<img src='./doc/snapshot2.png' />
+<img src='./doc/home.png' />
 </td>
 <td>
-<img src='./doc/snapshot4.png' />
+<img src='./doc/version.png' />
 </td>
 </tr>
 </table>
@@ -42,6 +42,7 @@
 - SDK的统一管理
 - 打开项目时自动切换到指定版本
 - 可视化的项目创建
+- 主持黑暗主题
 - 免费，开源
 
 ## 下载

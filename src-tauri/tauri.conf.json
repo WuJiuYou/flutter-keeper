@@ -7,7 +7,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "flutter-keeper",
+    "productName": "keeper",
     "version": "1.0.0"
   },
   "tauri": {
@@ -93,7 +93,7 @@
         "width": 1000,
         "height": 800,
         "minWidth": 1000,
-        "minHeight": 800
+        "minHeight": 600
       }
     ]
   }
