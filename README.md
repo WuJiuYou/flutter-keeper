@@ -5,7 +5,7 @@
     <a href="./README-CN.md">中文介绍</a> | English
 </p>
 <p align="center">
-    <em>开源的 Flutter多版本项目管理工具 桌面客户端，超小的安装包，支持 Windows、Mac 和 Linux</em>
+    <em>Open source Flutter multi version project management tool desktop client, ultra small installation package, supporting Windows, Mac, and Linux</em>
 </p>
 
 
@@ -36,41 +36,42 @@
 </table>
 
 
-## 特性
+## features
 
-- 项目的统一管理
-- SDK的统一管理
-- 打开项目时自动切换到指定版本
-- 可视化的项目创建
-- 免费，开源
+- Unified management of projects
+- Unified management of SDK
+- Automatically switch to the specified version when opening a project
+- Visual project creation
+- Support for dark themes
+- Free, open source
 
-## 下载
+## download
 
-*Keeper 支持所有的主流操作系统，包括： Windows、 Mac (Intel, M1) 和 Linux。*
+*Keeper Supports all mainstream operating systems，include： Windows、 Mac (Intel, M1) 和 Linux。*
 
-### 从 Github Releases 下载
+### Download from Github Releases
 
-您可以访问 **[Github Releases](https://github.com/WuJiuYou/flutter-keeper/releases)** 浏览并下载所有历史版本。
+You can access **[Github Releases](https://github.com/WuJiuYou/flutter-keeper/releases)** Browse and download all historical versions。
 
 
-## 为什么需要 Keeper？
+## Why do I need a Keeper？
 
-- Keeper 可视化的多版本Flutter项目管理
-- Keeper 帮助你轻松下载SDK，分类更合理，省去查找的麻烦
-- Keeper 轻松在不同sdk版本中随时切换
+- Keeper Visualized multi version Flutter project management
+- Keeper Help you easily download the SDK, classify it more reasonably, and save the trouble of searching
+- Keeper Easily switch between different SDK versions at any time
 
 
 ## Roadmap
 
-- [x] 项目的统一管理
-- [x] SDK的统一管理
-- [x] 打开项目时自动切换到指定版本
-- [x] 可视化的项目创建
-- [ ] 支持文件自定义打开方式
-- [ ] 支持自动应用内下载SDK并解压到指定目录中
-- [ ] 支持自动配置环境变量
-- [ ] 支持应用内打开第三方站点
-- 更多...
+- [x] Unified management of projects
+- [x] Unified management of SDK
+- [x] Automatically switch to the specified version when opening a project
+- [x] Visual project creation
+- [ ] Support for custom file opening methods
+- [ ] Support automatic download of SDK within the application and decompression to the specified directory
+- [ ] Support for automatic configuration of environment variables
+- [ ] Support opening third-party sites within the application
+- more...
 
 
 ## Star History
