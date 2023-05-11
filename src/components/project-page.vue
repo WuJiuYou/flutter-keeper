@@ -4,10 +4,9 @@ import { type } from "@tauri-apps/api/os";
 import { homeDir, join } from "@tauri-apps/api/path";
 import { Command, open } from "@tauri-apps/api/shell";
 import * as fs from "@tauri-apps/api/fs";
-import { Notification, Modal } from "@arco-design/web-vue";
+import { Notification, Modal,Message } from "@arco-design/web-vue";
 import * as ConfigUtils from "../utils/config-utils";
 import YAML from "js-yaml";
-
 
 const form = reactive({
     projectName: "first_app",
@@ -25,6 +24,8 @@ const form = reactive({
     projectPath: "",
     sdkSavePath: "",
     flutterHome: "",
+    studioPath: '',
+    codePath: '',
     versions: [],
     os: ""
 });
@@ -42,6 +43,8 @@ const readFlutterProjectList = async () => {
         const conf = await ConfigUtils.getConfig();
         form.projectPath = conf.projectPath;
         form.sdkSavePath = conf.sdkSavePath;
+        form.studioPath = conf.studioPath;
+        form.codePath = conf.codePath;
     }
     const home = await homeDir()
     form.flutterHome = await join(home, 'flutter')
@@ -153,7 +156,7 @@ const handleOk = async () => {
         return false;
     }
     } catch (error) {
-        console.log("error：：：：：：：：：",error);
+        Message.error(`${error}`)
     }
 };
 
@@ -163,11 +166,21 @@ const handleCancel = () => {
 
 const studioOpen = async (path, version) => {
     const isCanOpen = await setFlutterSDKSymlink(version)
-    if (isCanOpen) open(`idea://open?file=${path}`);
+    if(form.studioPath){
+        if (isCanOpen) new Command('open',['-a',form.studioPath,path]).execute();
+    }else{
+        Message.error('Please configure the path of AndroidStudio on the settings page')
+    }
+
 }
 const codeOpen = async (path, version) => {
     const isCanOpen = await setFlutterSDKSymlink(version)
-    if (isCanOpen) open(`vscode://file/${path}`);
+    if(form.codePath){
+        if (isCanOpen) new Command('open',['-a',form.codePath,path]).execute();
+    }else{
+        Message.error('Please configure the path of vscode on the settings page')
+    }
+    
 }
 
 const finderOpen = (path) => {
@@ -187,6 +200,8 @@ const setFlutterSDKSymlink = async (version) => {
         const current = await fs.readTextFile(await join(shorPath, 'version'))
         if (current !== version) {
             await fs.removeDir(shorPath, { recursive: true })
+        }else{
+            return true;
         }
     }
     var res;

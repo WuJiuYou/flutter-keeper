@@ -1,10 +1,11 @@
 <script setup>
 
 import { reactive } from 'vue';
-import { homeDir, join } from "@tauri-apps/api/path";
+import { homeDir, join,appDataDir } from "@tauri-apps/api/path";
 import { Command } from "@tauri-apps/api/shell";
 import { open } from "@tauri-apps/api/dialog";
-import { saveConfig, getConfig } from "../utils/config-utils"
+import { saveConfigJson, getConfig } from "../utils/config-utils"
+import { Message } from '@arco-design/web-vue';
 
 var home = ''
 
@@ -12,7 +13,10 @@ const form = reactive({
   flutterHome: '',
   sdkSavePath: '',
   projectPath: '',
-  sdkShortPath: ''
+  sdkShortPath: '',
+  studioPath: '',
+  codePath: '',
+  theme:'',
 })
 
 
@@ -45,21 +49,43 @@ const setFlutterDir = async () => {
   const config = await getConfig()
   form.sdkSavePath = config.sdkSavePath
   form.projectPath = config.projectPath
+  form.studioPath = config.studioPath
+  form.codePath = config.codePath
+  form.theme = config.theme
 }
 
-
-const resetDir = async () => {
-  form.sdkSavePath = await join(home, 'keeperVersion')
-  form.projectPath = await join(home, 'keeperSpace')
-  await saveConfig(form.sdkSavePath, form.projectPath)
+const onSelectStudioPath = async () => {
+  const selected = await open({
+    multiple: false,
+    directory: false,
+    defaultPath: home,
+  });
+  if (selected !== null) {
+    form.studioPath = selected;
+  }
+}
+const onSelectVSPath = async () => {
+  const selected = await open({
+    multiple: false,
+    directory: false,
+    defaultPath: home,
+  });
+  if (selected !== null) {
+    form.codePath = selected;
+  }
 }
 
 const handleSubmit = async () => {
   
-  await saveConfig(form.sdkSavePath, form.projectPath)
-  console.log('saveConfig:::::::::')
-  console.log(await getConfig())
-  console.log(':::::::::saveConfig')
+  await saveConfigJson({
+    sdkSavePath: form.sdkSavePath,
+    projectPath: form.projectPath,
+    studioPath:form.studioPath,
+    codePath:form.codePath,
+    theme:form.theme
+  })
+
+  Message.success('save success!!!')
 }
 
 setFlutterDir()
@@ -93,10 +119,25 @@ setFlutterDir()
         </a-input-search>
       </a-form-item>
 
+      <a-form-item field="studioPath" label="Android Studio">
+        <a-input-search v-model="form.studioPath" search-button @search="onSelectStudioPath" placeholder="please select android studio full install path ">
+          <template #button-icon>
+            <icon-folder />
+          </template>
+        </a-input-search>
+      </a-form-item>
+
+      <a-form-item field="codePath" label="Visual Studio Code">
+        <a-input-search v-model="form.codePath" search-button @search="onSelectVSPath" placeholder="please select vscode full install path">
+          <template #button-icon>
+            <icon-folder />
+          </template>
+        </a-input-search>
+      </a-form-item>
+
       <a-form-item>
         <a-space>
           <a-button type="primary" html-type="submit">Save</a-button>
-          <a-button type="outline" @click="resetDir">Reset</a-button>
         </a-space>
       </a-form-item>
     </a-form>
