@@ -61,19 +61,6 @@ You can access **[Github Releases](https://github.com/WuJiuYou/flutter-keeper/re
 - Keeper Easily switch between different SDK versions at any time
 
 
-## Roadmap
-
-- [x] Unified management of projects
-- [x] Unified management of SDK
-- [x] Automatically switch to the specified version when opening a project
-- [x] Visual project creation
-- [ ] Support for custom file opening methods
-- [ ] Support automatic download of SDK within the application and decompression to the specified directory
-- [ ] Support for automatic configuration of environment variables
-- [ ] Support opening third-party sites within the application
-- more...
-
-
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=WuJiuYou/flutter-keeper&type=Date)](https://star-history.com/#WuJiuYou/flutter-keeper&Date)

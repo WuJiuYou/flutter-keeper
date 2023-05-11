@@ -61,19 +61,6 @@
 - Keeper 轻松在不同sdk版本中随时切换
 
 
-## Roadmap
-
-- [x] 项目的统一管理
-- [x] SDK的统一管理
-- [x] 打开项目时自动切换到指定版本
-- [x] 可视化的项目创建
-- [ ] 支持文件自定义打开方式
-- [ ] 支持自动应用内下载SDK并解压到指定目录中
-- [ ] 支持自动配置环境变量
-- [ ] 支持应用内打开第三方站点
-- 更多...
-
-
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=WuJiuYou/flutter-keeper&type=Date)](https://star-history.com/#WuJiuYou/flutter-keeper&Date)
