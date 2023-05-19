@@ -1,8 +1,8 @@
 <script setup>
-import { ref, reactive } from "vue";
+import { reactive } from "vue";
 import { type } from "@tauri-apps/api/os";
 import { homeDir, join } from "@tauri-apps/api/path";
-import { Command, open } from "@tauri-apps/api/shell";
+import { Command } from "@tauri-apps/api/shell";
 import * as fs from "@tauri-apps/api/fs";
 import { Notification, Modal,Message } from "@arco-design/web-vue";
 import * as ConfigUtils from "../utils/config-utils";
@@ -184,7 +184,7 @@ const codeOpen = async (path, version) => {
 }
 
 const finderOpen = (path) => {
-    open(`file://${path}`);
+    new Command('open', [path]).execute()
 }
 
 const disableform = () => {
